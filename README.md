@@ -1,5 +1,9 @@
 # Voyager Forms
 
+## Why fork?
+- Added dynamic form fields slug
+- Added ajax response (if `_is_ajax` param is present in the request)
+
 __The Missing Form Module for The Missing Laravel Admin.__
 
 This [Laravel](https://laravel.com/) package adds dynamic form creation and shortcode insertion to a [Voyager](https://laravelvoyager.com/) project.

@@ -40,4 +40,19 @@ class Form extends Model
     {
         return unserialize($value);
     }
+
+    public function getNameAttribute($value) {
+        $layout = str_replace('_', '-', $this->layout);
+        return \Str::slug("form-{$this->title}-{$layout}");
+    }
+
+    public function fieldNameToLabel($field_name) {
+        $fields = $this->inputs;
+
+        $result = $fields->filter(function($field) use ($field_name) {
+            return $field->name == $field_name;
+        })->first();
+
+        return $result ? $result->label : $field_name;
+    }
 }

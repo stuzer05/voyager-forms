@@ -35,4 +35,8 @@ class FormInput extends Model
     {
         return unserialize($value);
     }
+
+    public function getNameAttribute($value) {
+        return str_replace('-', '_', \Str::slug($this->label));
+    }
 }

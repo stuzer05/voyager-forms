@@ -22,6 +22,8 @@ class Forms
     {
         $form = self::model('Form')->where('id', $key)->first();
 
+        $form->layout = $default ? $default : $form->layout;
+
         try {
             if (!View::exists('voyager-forms::layouts.' . $form->layout)) {
                 $form->layout = 'default';

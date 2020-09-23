@@ -105,9 +105,16 @@ class EnquiryController extends VoyagerBaseController
         Mail::to(array_map('trim', explode(',', $form->mailto)))
             ->send(new EnquiryMailable($form, $formData, $filesKeys));
 
-        return redirect()
-            ->back()
-            ->with('success', $form->message_success);
+        if ($request->exists('_is_ajax')) {
+            return response([
+                'status' => 'success',
+                'msg' => __($form->message_success)
+            ]);
+        } else {
+            return redirect()
+                ->back()
+                ->with('success', $form->message_success);
+        }
     }
 
     /**
@@ -235,7 +242,12 @@ class EnquiryController extends VoyagerBaseController
      */
     protected function getFormDataAndFilesKeys($form, $request)
     {
-        $formData = $request->except(['_token', 'id', 'g-recaptcha-response']);
+        $formDataTmp = $request->except(['_token', 'id', 'g-recaptcha-response']);
+        $formData = [];
+        foreach ($formDataTmp as $name => $data) {
+            $formData[$form->fieldNameToLabel($name)] = $data;
+        };
+
         $filesKeys = [];
 
         $mimes = $this->getMimesFromForm($form);
@@ -274,7 +286,7 @@ class EnquiryController extends VoyagerBaseController
         return $mimes;
     }
 
-        
+
     /**
      * Builds a validation array based on required / email input form fields.
      * Returns an array to be fed into the validate() function.
@@ -293,7 +305,7 @@ class EnquiryController extends VoyagerBaseController
             }
 
             if ($input->required) {
-                $validationArray[str_replace(' ', '_', $input->label)] = 'required' . $additionalValidation;
+                $validationArray[$input->name] = 'required' . $additionalValidation;
             }
         }
 
