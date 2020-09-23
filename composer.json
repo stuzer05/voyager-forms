@@ -1,5 +1,5 @@
 {
-    "name": "pvtl/voyager-forms",
+    "name": "stuzer05/voyager-forms",
     "description": "Ahoy! - A package to implement forms into Voyager",
     "keywords": [
         "laravel",
@@ -17,7 +17,7 @@
         }
     ],
     "require": {
-        "pvtl/voyager-frontend": "^0.9",
+        "stuzer05/voyager-frontend": "dev-master",
         "tcg/voyager": "^1.1",
         "guzzlehttp/guzzle": "~6.0"
     },
