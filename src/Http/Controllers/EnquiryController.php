@@ -99,7 +99,7 @@ class EnquiryController extends VoyagerBaseController
         ])->save();
 
         // Debug/Preview the email
-        // return (new EnquiryMailable($form, $formData, $filesKeys))->render();
+        return (new EnquiryMailable($form, $formData, $filesKeys))->render();
 
         // Send the email
         Mail::to(array_map('trim', explode(',', $form->mailto)))
@@ -299,9 +299,9 @@ class EnquiryController extends VoyagerBaseController
         $validationArray = [];
         foreach ($form->inputs as $input) {
             if ($input->type === 'email') {
-                $additionalValidation = '|email';
+                $additionalValidation = !empty($input->rules) ? "|email|{$input->rules}" : '|email';
             } else {
-                $additionalValidation = '';
+                $additionalValidation = !empty($input->rules) ? "|{$input->rules}" : '';
             }
 
             if ($input->required) {

@@ -2,19 +2,25 @@
 
 namespace Pvtl\VoyagerForms;
 
+use TCG\Voyager\Traits\Translatable;
 use Illuminate\Database\Eloquent\Model;
 use Pvtl\VoyagerForms\Form;
 
 class FormInput extends Model
 {
+    use Translatable;
+
     protected $fillable = [
         'form_id',
         'label',
         'class',
         'type',
         'options',
+        'rules',
         'required',
     ];
+
+    protected $translatable = ['label', 'options'];
 
     public function scopeOrdered($query)
     {

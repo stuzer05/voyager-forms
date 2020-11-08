@@ -57,8 +57,47 @@ class FormController extends VoyagerBaseController
             }
         }
 
+        $translatable_fields = ['title', 'message_success'];
+        $translations = $this->prepareTranslations($translatable_fields, $request);
+
+        $default_locale = config('voyager.multilingual.default', 'en');
+        $locales = config('voyager.multilingual.locales', [$default_locale]);
+
         // Create the form
-        $form = Form::create($request->all());
+        $data = $request->all();
+        $data['title'] = '';
+        $data['message_success'] = '';
+        $form = new Form($data);
+        $form->save();
+
+        $data = $request->all();
+
+        if (!empty($translations)) {
+            foreach ($locales as $locale) {
+                if (!array_key_exists($locale, $translations)) continue;
+
+                $localized_data = $data;
+                foreach ($translations[$locale] as $field => $translation) {
+                    $localized_data[$field] = $translation;
+                }
+
+                if ($locale == $default_locale) {
+                    $form->title = $localized_data['title'];
+                    $form->message_success = $localized_data['message_success'] ?? '';
+
+                    $form->save();
+                } else {
+                    $form_trans = $form->translate($locale);
+
+                    $form_trans->title = $localized_data['title'];
+                    $form_trans->message_success = $localized_data['message_success'] ?? '';
+
+                    $form_trans->save();
+                }
+            }
+        } else {
+            $form->save();
+        }
 
         // Create some default inputs
         $inputs = [
@@ -155,8 +194,41 @@ class FormController extends VoyagerBaseController
             }
         }
 
-        $form->fill($request->all());
-        $form->save();
+        $translatable_fields = ['title', 'message_success'];
+        $translations = $this->prepareTranslations($translatable_fields, $request);
+
+        $default_locale = config('voyager.multilingual.default', 'en');
+        $locales = config('voyager.multilingual.locales', [$default_locale]);
+
+        $data = $request->all();
+        $form->fill($data);
+
+        if (!empty($translations)) {
+            foreach ($locales as $locale) {
+                if (!array_key_exists($locale, $translations)) continue;
+
+                $localized_data = $data;
+                foreach ($translations[$locale] as $field => $translation) {
+                    $localized_data[$field] = $translation;
+                }
+
+                if ($locale == $default_locale) {
+                    $form->title = $localized_data['title'];
+                    $form->message_success = $localized_data['message_success'] ?? '';
+
+                    $form->save();
+                } else {
+                    $form_trans = $form->translate($locale);
+
+                    $form_trans->title = $localized_data['title'];
+                    $form_trans->message_success = $localized_data['message_success'] ?? '';
+
+                    $form_trans->save();
+                }
+            }
+        } else {
+            $form->save();
+        }
 
         return redirect()
             ->back()
@@ -164,5 +236,39 @@ class FormController extends VoyagerBaseController
                 'message' => __('voyager::generic.successfully_updated') . " {$dataType->display_name_singular}",
                 'alert-type' => 'success',
             ]);
+    }
+
+    public function prepareTranslations($fields, $request)
+    {
+        $translations = [];
+
+        $default_locale = config('voyager.multilingual.default', 'en');
+        $locales = config('voyager.multilingual.locales', [$default_locale]);
+
+        // $fields = !empty($request->attributes->get('breadRows')) ? array_intersect($request->attributes->get('breadRows'), $transFields) : $transFields;
+
+        foreach ($fields as $field) {
+            if (!$request->input($field.'_i18n')) {
+                throw new Exception('Invalid Translatable field'.$field);
+            }
+
+            $trans = json_decode($request->input($field.'_i18n'), true);
+
+            foreach ($trans as $lang => $translation) {
+                if (!array_key_exists($lang, $translations)) $translations[$lang] = [];
+                $translations[$lang][$field] = $translation;
+            }
+
+            // Set the default local value
+            $request->merge([$field => $trans[config('voyager.multilingual.default', 'en')]]);
+
+            // Remove field hidden input
+            unset($request[$field.'_i18n']);
+        }
+
+        // Remove language selector input
+        unset($request['i18n_selector']);
+
+        return $translations;
     }
 }

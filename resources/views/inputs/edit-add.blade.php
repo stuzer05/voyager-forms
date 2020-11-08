@@ -2,7 +2,13 @@
     <i class="glyphicon glyphicon-sort order-handle"></i>
     <div class="panel panel-bordered panel-info">
         <div class="panel-heading">
-            <h3 class="panel-title">{{ ucwords(str_replace('_', ' ', $input->type)) }} Input</h3>
+            @php
+                $isModelTranslatable = true;
+            @endphp
+            <h3 class="panel-title">
+                {{ ucwords(str_replace('_', ' ', $input->type)) }} Input
+                @include('voyager::multilingual.language-selector')
+            </h3>
         </div> <!-- /.panel-heading -->
 
         <div class="panel-body">
@@ -29,6 +35,13 @@
                         <div class="form-group">
                             <label for="label">Label</label>
                             <input name="label" class="form-control" id="label" value="{{ $input->label }}" required>
+
+                            @php
+                                $row = (object) [
+                                    'field' => 'label',
+                                ];
+                            @endphp
+                            @include('voyager::multilingual.input-hidden-bread-edit-add', ['dataTypeContent' => $input])
                         </div>
                     </div>
 
@@ -37,6 +50,13 @@
                             <div class="form-group">
                                 @if($input->type !== 'file')
                                     <label for="options">Options <small>(Separated with ", ")</small></label>
+
+                                    @php
+                                        $row = (object) [
+                                            'field' => 'options',
+                                        ];
+                                    @endphp
+                                    @include('voyager::multilingual.input-hidden-bread-edit-add', ['dataTypeContent' => $input])
                                 @else
                                     <label for="options">MIME types <small>(Eg. ".pdf,.zip")</small></label>
                                 @endif
@@ -50,6 +70,13 @@
                         <div class="form-group">
                             <label for="class">CSS Classes</label>
                             <input name="class" class="form-control" id="class" value="{{ $input->class }}">
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 no-bottom-margin">
+                        <div class="form-group">
+                            <label for="rules">Validation rules</label>
+                            <input name="rules" class="form-control" id="rules" value="{{ $input->rules }}">
                         </div>
                     </div>
 

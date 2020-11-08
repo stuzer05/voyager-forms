@@ -2,10 +2,13 @@
 
 namespace Pvtl\VoyagerForms;
 
+use TCG\Voyager\Traits\Translatable;
 use Illuminate\Database\Eloquent\Model;
 
 class Form extends Model
 {
+    use Translatable;
+
     protected $fillable = [
         'title',
         'view',
@@ -15,6 +18,8 @@ class Form extends Model
         'email_template',
         'message_success',
     ];
+
+    protected $translatable = ['title', 'message_success'];
 
     protected static function boot() {
         parent::boot();

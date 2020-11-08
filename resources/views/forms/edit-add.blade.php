@@ -50,6 +50,14 @@
     </style>
 @stop
 
+@php
+    $isModelTranslatable = true;
+    if (!isset($form)) {
+        $form = new \Pvtl\VoyagerForms\Form;
+    }
+    $form->load('translations');
+@endphp
+
 @section('page_header')
     <h1 class="page-title">
         <i class="{{ $dataType->icon }}"></i>
@@ -75,7 +83,11 @@
                     @endif
 
                     <div class="panel-heading">
-                        <h3 class="panel-title"><i class="voyager-info-circled"></i> Form Details</h3>
+                        <h3 class="panel-title">
+                            <i class="voyager-info-circled"></i>
+                            Form Details
+                            @include('voyager::multilingual.language-selector')
+                        </h3>
                     </div> <!-- /.panel-heading -->
 
                     <div class="panel-body">
@@ -98,6 +110,13 @@
                                 <label for="title">Title</label>
                                 <input name="title" class="form-control" type="text"
                                        @if (isset($form->title)) value="{{ $form->title }}" @endif required>
+
+                                @php
+                                    $row = (object) [
+                                        'field' => 'title',
+                                    ];
+                                @endphp
+                                @include('voyager::multilingual.input-hidden-bread-edit-add', ['dataTypeContent' => $form])
                             </div>
 
                             @if (isset($form->id))
@@ -171,6 +190,13 @@
                                     @if (isset($form->message_success)) value="{{ $form->message_success }}" @endif
                                     placeholder="Thanks for your enquiry"
                                 />
+
+                                @php
+                                    $row = (object) [
+                                        'field' => 'message_success',
+                                    ];
+                                @endphp
+                                @include('voyager::multilingual.input-hidden-bread-edit-add', ['dataTypeContent' => $form])
                             </div>
 
                             <div class="form-group">
@@ -279,6 +305,60 @@
                     });
                 }
             });
+
+            // Multilingual
+            setTimeout(() => {
+                $('.language-selector [name=i18n_selector]').on('change', function() {
+                    let lang = $(this).attr('id');
+                    let block = $(this).closest('.dd-item,.panel');
+
+                    block.find('[data-i18n]').each(function() {
+                        let field = $(this).attr('name').replace('_i18n', '');
+                        let data = JSON.parse($(this).val());
+
+                        if (typeof data[lang] === 'undefined') return;
+
+                        let tinymce_el = $(this).closest('.form-group').find('textarea.richTextBox[name=' + field + ']');
+                        if (tinymce_el.length) {
+                            let tinymce_id = tinymce_el.attr('id');
+                            let editor = tinymce.get(tinymce_id);
+
+                            // console.log('write: ', data, data[lang]);
+                            editor.setContent(data[lang]);
+                        } else {
+                            block.find('[name=' + field + ']').val(data[lang]);
+                        }
+                    })
+                })
+
+                $('[data-i18n]').each(function() {
+                    let field = $(this).attr('name').replace('_i18n', '');
+                    let data = JSON.parse($(this).val());
+                    let trans_el = $(this);
+
+                    $(this).closest('.form-group').find('input,textarea').on('keyup', function() {
+                        let lang = $(this).closest('.dd-item,.panel').find('.language-selector .btn-primary.active [name=i18n_selector]').attr('id');
+
+                        data[lang] = $(this).val();
+
+                        trans_el.val(JSON.stringify(data));
+                    });
+                    $(this).closest('.form-group').find('textarea.richTextBox').each(function() {
+                        let tinymce_id = $(this).attr('id');
+                        let editor = tinymce.get(tinymce_id);
+                        let field = $(this);
+
+                        editor.on('change', function() {
+                            let lang = field.closest('.dd-item,.panel').find('.language-selector .btn-primary.active [name=i18n_selector]').attr('id');
+
+                            data[lang] = editor.getContent();
+                            // console.log('read: ', data, data[lang], lang);
+
+                            trans_el.val(JSON.stringify(data));
+                        })
+                    });
+                })
+            }, 500);
         });
     </script>
 @stop
