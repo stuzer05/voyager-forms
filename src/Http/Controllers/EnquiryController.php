@@ -67,7 +67,7 @@ class EnquiryController extends VoyagerBaseController
 
         // Execute the hook
         if ($form->hook) {
-            ClassEvents::executeClass($form->hook, $formData);
+            ClassEvents::executeClass($form->hook, [$formData]);
         }
 
         // The recipients
