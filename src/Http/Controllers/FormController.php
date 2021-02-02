@@ -89,8 +89,8 @@ class FormController extends VoyagerBaseController
                 } else {
                     $form_trans = $form->translate($locale);
 
-                    $form_trans->title = $localized_data['title'];
-                    $form_trans->message_success = $localized_data['message_success'] ?? '';
+                    $form_trans->title = $localized_data['title'] ?? $form->title;
+                    $form_trans->message_success = $localized_data['message_success'] ?? $form->message_success ?? '';
 
                     $form_trans->save();
                 }
