@@ -3,6 +3,7 @@
 ## Why fork?
 - Added dynamic form fields slug
 - Added ajax response (if `_is_ajax` param is present in the request)
+- Added translations
 
 __The Missing Form Module for The Missing Laravel Admin.__
 
