@@ -18,7 +18,7 @@
     ],
     "require": {
         "stuzer05/voyager-frontend": "dev-master",
-        "stuzer05/voyager": "^1.1",
+        "stuzer05/voyager": "dev-devel",
         "guzzlehttp/guzzle": "~6.0"
     },
     "require-dev": {
