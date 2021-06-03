@@ -99,7 +99,7 @@ class EnquiryController extends VoyagerBaseController
         ])->save();
 
         // Debug/Preview the email
-        return (new EnquiryMailable($form, $formData, $filesKeys))->render();
+        // return (new EnquiryMailable($form, $formData, $filesKeys))->render();
 
         // Send the email
         Mail::to(array_map('trim', explode(',', $form->mailto)))
