@@ -292,10 +292,6 @@ class EnquiryController extends VoyagerBaseController
         return $mimes;
     }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 8b3c2f7
     /**
      * Builds a validation array based on required / email input form fields.
      * Returns an array to be fed into the validate() function.
