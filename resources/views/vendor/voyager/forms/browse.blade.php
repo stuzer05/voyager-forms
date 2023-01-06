@@ -30,7 +30,7 @@
                             <form method="get" class="form-search">
                                 <div id="search-input">
                                     <select id="search_key" name="key">
-                                        @foreach($searchable as $key)
+                                        @foreach($searchable ?? [] as $key)
                                             <option value="{{ $key }}" @if($search->key == $key){{ 'selected' }}@endif>{{ ucwords(str_replace('_', ' ', $key)) }}</option>
                                         @endforeach
                                     </select>
@@ -59,11 +59,11 @@
                                     @foreach($dataType->browseRows as $row)
                                         <th>
                                             @if ($isServerSide)
-                                                <a href="{{ $row->sortByUrl() }}">
+                                                <a href="{{ $row->sortByUrl($orderBy, $sortOrder) }}">
                                                     @endif
                                                     {{ $row->display_name }}
                                                     @if ($isServerSide)
-                                                        @if ($row->isCurrentSortField())
+                                                        @if ($row->isCurrentSortField($orderBy))
                                                             @if (!isset($_GET['sort_order']) || $_GET['sort_order'] == 'asc')
                                                                 <i class="voyager-angle-up pull-right"></i>
                                                             @else
@@ -87,7 +87,7 @@
                                         @endcan
                                         @foreach($dataType->browseRows as $row)
                                             <td>
-                                                <?php $options = json_decode($row->details); ?>
+                                                <?php $options = json_decode(is_string($row->details) ? $row->details : '{}'); ?>
                                                 @if($row->type == 'image')
                                                     <img src="@if( !filter_var($data->{$row->field}, FILTER_VALIDATE_URL)){{ Voyager::image( $data->{$row->field} ) }}@else{{ $data->{$row->field} }}@endif" style="width:100px">
                                                 @elseif($row->type == 'relationship')
